@@ -1,3 +1,6 @@
+/**
+ * @author Nathaniel Higgins
+ */
 exports.wait = function(condition, callback, when) {
 
 	if (typeof when === 'undefined') {
