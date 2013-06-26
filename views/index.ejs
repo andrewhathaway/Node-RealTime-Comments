@@ -3,9 +3,34 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascripts/app.js"></script>
+
+    <script>
+    var socket = io.connect('http://localhost');
+    socket.on('alert', function(message) {
+    	alert(message);
+    });
+    </script>
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+      <h2>Todo</h2>
+      <div ng-app="comments" ng-controller="comments">
+        <span>{{comments.length}} Comments</span>
+        <ul class="unstyled">
+          <li ng-repeat="comment in comments">
+          	<strong>{{comment.author}}</strong><br>
+          	<p>
+          		{{comment.body}}
+          	</p>
+          </li>
+        </ul>
+        <form ng-submit="addComment()">
+        	<input type="text" placeholder="Your Name" ng-model="commentAuthor"><br>
+            <textarea name="" id="" cols="30" rows="10" placeholder="Comment" ng-model="commentBody"></textarea>
+          <input class="btn-primary" type="submit" value="add">
+        </form>
+      </div>
+    </body>
 </html>
