@@ -1,5 +1,5 @@
 angular.module('comments', []).controller('comments', function($scope) {
-	var socket = io.connect('http://localhost');
+	var socket = io.connect('http://' + location.hostname);
 
 	$scope.comments = [];
 
@@ -20,6 +20,13 @@ angular.module('comments', []).controller('comments', function($scope) {
 			author: $scope.commentAuthor,
 			body: $scope.commentBody
 		});
+		$scope.commentAuthor = '';
+		$scope.commentBody = '';
+	};
+
+	$scope.clearComments = function() {
+		socket.emit('clear_comments');
+		
 		$scope.commentAuthor = '';
 		$scope.commentBody = '';
 	};

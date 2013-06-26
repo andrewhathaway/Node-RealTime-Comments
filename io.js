@@ -84,7 +84,18 @@ module.exports = function(io) {
 				var model = new Comment(comment);
 				model.save();
 			});
-		})
+		});
+
+		s.on('clear_comments', function() {
+			console.log('ran');
+			condition.wait(function() {
+				return open;
+			}, function() {
+				Comment.collection.drop();
+				currentComments = [];
+				s.emit('clear');
+			});
+		});
 	});
 
 };
