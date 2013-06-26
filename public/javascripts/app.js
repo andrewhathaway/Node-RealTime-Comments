@@ -20,14 +20,16 @@ angular.module('comments', []).controller('comments', function($scope) {
 			author: $scope.commentAuthor,
 			body: $scope.commentBody
 		});
-		$scope.commentAuthor = '';
-		$scope.commentBody = '';
+		clearForm();
 	};
 
 	$scope.clearComments = function() {
 		socket.emit('clear_comments');
-		
+		clearForm();
+	};
+
+	function clearForm() {
 		$scope.commentAuthor = '';
 		$scope.commentBody = '';
-	};
+	}
 });
