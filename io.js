@@ -62,16 +62,16 @@ module.exports = function(io) {
 
 		}, function() {
 
-			s.get('comment_index', function(err, comment_index) {
-				if (err) throw err;
-				var comments_to_send = currentComments.slice(comment_index, currentComments.length);
+		s.get('comment_index', function(err, comment_index) {
+			if (err) throw err;
+			var comments_to_send = currentComments.slice(comment_index, currentComments.length);
 
-				comments_to_send.forEach(function(comment) {
-					s.emit('comment', comment);
-				});
-
-				s.set('comment_index', comment_index + comments_to_send.length);
+			comments_to_send.forEach(function(comment) {
+				s.emit('comment', comment);
 			});
+
+			s.set('comment_index', comment_index + comments_to_send.length);
+		});
 
 		});
 		s.on('comment', function(comment) {
