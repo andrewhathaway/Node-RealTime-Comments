@@ -1,10 +1,16 @@
-var condition = require('./condition');
+var condition = require('condition');
 
 module.exports = function(io) {
 
+	/**
+	 * Connect to the DB
+	 */
 	var mongoose = require('mongoose');
 	mongoose.connect('mongodb://localhost/comments');
 
+	/**
+	 * Variables used throughout
+	 */
 	var db = mongoose.connection;
 	var open = false;
 	var commentSchema;
@@ -12,8 +18,17 @@ module.exports = function(io) {
 
 	var currentComments = [];
 
+	/**
+	 * If DB error, console it
+	 */
 	db.on('error', console.error.bind(console, 'connection error'));
 
+	/**
+	 * When the DB connection is open,
+	 * create the Comment schema and find 
+	 * all comments and add them to the 
+	 * currentComments array
+	 */
 	db.once('open', function() {
 
 		open = true;
@@ -39,16 +54,21 @@ module.exports = function(io) {
 		});
 	});
 
+	/**
+	 * When connected
+	 */
 	io.sockets.on('connection', function(s) {
 
 		s.emit('clear');
-
 		var has_set = false;
 
 		s.set('comment_index', 0, function() {
 			has_set = true;
 		});
 
+		/**
+	 	 * Send the comments to the client
+	 	 */
 		condition.when(function(done) {
 
 			if (!has_set) {
@@ -61,19 +81,22 @@ module.exports = function(io) {
 			});
 
 		}, function() {
+			s.get('comment_index', function(err, comment_index) {
+				if (err) throw err;
+				var comments_to_send = currentComments.slice(comment_index, currentComments.length);
 
-		s.get('comment_index', function(err, comment_index) {
-			if (err) throw err;
-			var comments_to_send = currentComments.slice(comment_index, currentComments.length);
+				comments_to_send.forEach(function(comment) {
+					s.emit('comment', comment);
+				});
 
-			comments_to_send.forEach(function(comment) {
-				s.emit('comment', comment);
+				s.set('comment_index', comment_index + comments_to_send.length);
 			});
-
-			s.set('comment_index', comment_index + comments_to_send.length);
 		});
 
-		});
+		/**
+	 	 * When a new comment is sent,
+	 	 * save to DB and add to currentComments
+	 	 */
 		s.on('comment', function(comment) {
 			condition.wait(function() {
 				return open;
@@ -86,6 +109,9 @@ module.exports = function(io) {
 			});
 		});
 
+		/**
+	 	 * Clear the comments from the DB
+	 	 */
 		s.on('clear_comments', function() {
 			condition.wait(function() {
 				return open;

@@ -10,6 +10,7 @@
     "ejs": "*",
     "node-compass": "*",
     "socket.io": "*",
-    "mongoose": "*"
+    "mongoose": "*",
+    "condition": "*"
   }
 }
